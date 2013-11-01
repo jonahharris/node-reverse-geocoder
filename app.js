@@ -1,6 +1,6 @@
 var restify = require('restify');
 var Heap = require('heap');
-var geohash = require('geo-hash');
+var geohash = require('ngeohash');
 var cluster = require('cluster');
 var microtime = require('microtime');
 
@@ -95,6 +95,8 @@ if (cluster.isMaster) {
       return -1;
   });
 
+  //for (var ii in invertedIndex) {
+
   function findNearestZOrder (k, lat, lon) {
     var latRad = (lat * 0.017453292519943295);
     var lonRad = (lon * 0.017453292519943295);
@@ -119,6 +121,34 @@ if (cluster.isMaster) {
     }
     offset = Math.ceil(offset * 1.25); // fudge
     var elements = objs.slice(Math.max(0, (pos - offset)), Math.min(objs.length, (pos + offset + 1)));
+/*
+    console.log('count is ' + elements.length);
+    var neighbors = [];
+    var count = objs[pos].l.length;
+    var offset = 1;
+    do {
+      var blocks = [];
+      for (var jj = -offset; jj <= offset; ++jj) {
+        blocks.push(geohash.neighbor(hash, [offset, jj]));
+        blocks.push(geohash.neighbor(hash, [-offset, -jj]));
+      }
+      for (var ii = offset - 1; ii >= (-offset + 1); --ii) {
+        blocks.push(geohash.neighbor(hash, [ii, offset]));
+        blocks.push(geohash.neighbor(hash, [-ii, -offset]));
+      }
+      for (var ii in blocks) {
+        if ('undefined' !== typeof invertedIndex[blocks[ii]]) {
+          count += invertedIndex[blocks[ii]].length;
+          //console.log('count -> ' + count);
+        }
+      }
+      if (count >= k) {
+        break;
+      }
+      ++offset;
+    } while (true === true);
+    console.log('count is ' + count);
+*/
     for (var ii in elements) {
       for (var jj in elements[ii].l) {
         var city = elements[ii].l[jj];
@@ -133,14 +163,14 @@ if (cluster.isMaster) {
       }
     }
 
-    var topTen = [];
+    var resultArray = [];
     var entry = null;
     while (entry = heapq.pop()) {
       entry.distance = (Math.acos(entry.distance) * 3959.0);
-      topTen.unshift(entry);
+      resultArray.unshift(entry);
     }
 
-    return topTen;
+    return resultArray;
   }
 
   function reverseGeocode (req, res, next) {
@@ -159,8 +189,8 @@ if (cluster.isMaster) {
           region: locations[ii].city.src.region,
           region_code: locations[ii].city.src.region_code,
           city: locations[ii].city.src.name,
-          latitude: locations[ii].city.src.latitude,
-          longitude: locations[ii].city.src.longitude,
+          latitude: locations[ii].city.src.lat,
+          longitude: locations[ii].city.src.lon,
           distance: locations[ii].distance
         });
     }

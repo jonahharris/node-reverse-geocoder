@@ -6,7 +6,7 @@
     {
       "restify": "*"
       , "heap": "*"
-      , "geo-hash": "*"
+      , "geo-hash": "git://github.com/sunng87/node-geohash.git"
       , "microtime": "*"
     }
 }

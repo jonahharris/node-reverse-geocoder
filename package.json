@@ -1,0 +1,12 @@
+{
+  "name": "reverse-geocoder"
+  , "version": "0.0.1"
+  , "preferGlobal": false
+  , "dependencies":
+    {
+      "restify": "*"
+      , "heap": "*"
+      , "geo-hash": "*"
+      , "microtime": "*"
+    }
+}

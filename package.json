@@ -1,12 +1,23 @@
 {
   "name": "reverse-geocoder"
+  , "author": "meetme"
+  , "main": "./index"
   , "version": "0.0.1"
   , "preferGlobal": false
   , "dependencies":
     {
-      "restify": "*"
+        "restify": "*"
       , "heap": "*"
       , "geo-hash": "git://github.com/sunng87/node-geohash.git"
       , "microtime": "*"
     }
+  , "devDependencies":
+    {
+        "mocha": "*"
+    }
+  , "scripts":
+    {
+        "start": "node app.js"
+      , "test": "node ./node_modules/mocha/bin/mocha -u tdd"
+  }
 }
